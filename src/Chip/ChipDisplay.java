@@ -9,10 +9,17 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+
+import java.io.File;
 
 public class ChipDisplay extends Application {
     int[] keyIdToKey;
@@ -25,12 +32,14 @@ public class ChipDisplay extends Application {
 
         Chip8 chip = new Chip8();
         chip.init();
-        chip.loadProgram("./Programs/Tetris [Fran Dachille, 1991].ch8");
+        chip.loadProgram("./Programs/pong2.c8");
 
-        Group root = new Group();
+        VBox root = new VBox();
         Scene mainScene = new Scene(root);
         stage.setScene(mainScene);
         stage.setTitle("Chip-8 Emulator");
+
+        root.getChildren().add(createMenuBar(stage, chip));
 
         Canvas canvas = new Canvas(960, 480);
         root.getChildren().add(canvas);
@@ -58,6 +67,30 @@ public class ChipDisplay extends Application {
         loop.getKeyFrames().add( kf );
         loop.play();
         stage.show();
+    }
+
+    private MenuBar createMenuBar(Stage stage, Chip8 chip){
+        MenuBar menu_bar = new MenuBar();
+        Menu file_menu = new Menu("File");
+        MenuItem add_file = new MenuItem("Add File");
+        FileChooser chooser = new FileChooser();
+        FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("CHIP-8", "*.c8", "*.ch8");
+        chooser.getExtensionFilters().add(filter);
+        chooser.setInitialDirectory(new File("./Programs"));
+        add_file.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                File file = chooser.showOpenDialog(stage);
+                if (file != null) {
+                    chip.init();
+                    chip.loadProgram(file.toString());
+                }
+            }
+        });
+
+        file_menu.getItems().add(add_file);
+        menu_bar.getMenus().add(file_menu);
+        return menu_bar;
     }
 
     private void drawPixels(GraphicsContext g, Chip8 chip){
