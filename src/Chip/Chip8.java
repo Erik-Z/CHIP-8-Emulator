@@ -342,6 +342,8 @@ public class Chip8 {
         return display;
     }
 
+    public char[] getMemory() {return memory;}
+
     public boolean needsRedraw(){
         return draw_flag;
     }
@@ -349,8 +351,6 @@ public class Chip8 {
     public void removeDrawFlag(){
         draw_flag = false;
     }
-
-
     /**
      * Loads the file in bytes into Chip Memory starting at 0x200
      * @param file location of the file
