@@ -5,13 +5,13 @@ import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -32,7 +32,7 @@ public class ChipDisplay extends Application {
 
         Chip8 chip = new Chip8();
         chip.init();
-        chip.loadProgram("./Programs/pong2.c8");
+        //chip.loadProgram("./Programs/pong2.c8");
 
         VBox root = new VBox();
         Scene mainScene = new Scene(root);
@@ -73,6 +73,7 @@ public class ChipDisplay extends Application {
         MenuBar menu_bar = new MenuBar();
         Menu file_menu = new Menu("File");
         MenuItem add_file = new MenuItem("Add File");
+
         FileChooser chooser = new FileChooser();
         FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("CHIP-8", "*.c8", "*.ch8");
         chooser.getExtensionFilters().add(filter);
@@ -88,8 +89,36 @@ public class ChipDisplay extends Application {
             }
         });
 
+        Menu view_menu = new Menu("View");
+        MenuItem view_memory = new Menu("View Memory");
+
+        view_memory.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                String memory = "";
+                for (int i = 0x000; i < 4096; i++){
+                    if(i % 2 == 0){
+                        memory = memory + String.format("%02X", (int) chip.getMemory()[i]);
+                    } else {
+                        memory = memory + String.format("%02X", (int) chip.getMemory()[i]) + " ";
+                    }
+
+                }
+                TextArea textArea = new TextArea(memory);
+                textArea.setWrapText(true);
+                Scene memory_scene = new Scene(textArea,600, 400);
+
+                Stage memory_window = new Stage();
+                memory_window.setTitle("Memory");
+                memory_window.setScene(memory_scene);
+                memory_window.show();
+            }
+        });
+
         file_menu.getItems().add(add_file);
+        view_menu.getItems().add(view_memory);
         menu_bar.getMenus().add(file_menu);
+        menu_bar.getMenus().add(view_menu);
         return menu_bar;
     }
 
