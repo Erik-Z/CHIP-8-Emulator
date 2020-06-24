@@ -65,6 +65,11 @@ public class Chip8 {
                         pc = (char) (stack[stack_pointer] + 2);
                         System.out.println("Return to " + Integer.toHexString(pc));
                         break;
+                    case 0x0000:{
+                        //No File Loaded
+                        System.out.println("Waiting FIle");
+                        break;
+                    }
                     default:
                         System.err.println("Super Chip 8 opcodes not supported.");
                         System.exit(0);
@@ -369,18 +374,31 @@ public class Chip8 {
         }
     }
 
+    /**
+     * The font set of a CHIP-8 microcomputer is what the it uses to display a set of 16 characters
+     * The font set contains the the characters 0 - F.
+     * This function loads the font set into main memory starting at address 0x50.
+     */
     public void loadFontSet(){
         for(int i = 0; i < ChipData.fontset.length; i++){
             memory[0x50 + i] = (char) (ChipData.fontset[i] & 0xFF);
         }
     }
 
+    /**
+     * This method transfers the contents of KeyBuffer into the keys array in this class.
+     * @param keyBuffer This contains the list of keys pressed during this clock cycle.
+     */
     public void setKeyBuffer(int[] keyBuffer) {
         for(int i = 0; i < keys.length; i++) {
             keys[i] = (byte)keyBuffer[i];
         }
     }
 
+    /**
+     * Jumps to the address in memory contained in the last 3 nibbles of the opcode.
+     * @param opcode This is the current opcode that the chip is reading
+     */
     private void code0x1000(char opcode){
         int address = opcode & 0x0FFF;
         pc = (char) address;
