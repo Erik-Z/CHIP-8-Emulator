@@ -5,16 +5,16 @@ import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -39,7 +39,8 @@ public class ChipDisplay extends Application {
         stage.setScene(mainScene);
         stage.setTitle("Chip-8 Emulator");
 
-        root.getChildren().add(createMenuBar(stage, chip));
+        Text memory_text = new Text();
+        root.getChildren().add(createMenuBar(stage, chip, memory_text));
 
         Canvas canvas = new Canvas(960, 480);
         root.getChildren().add(canvas);
@@ -69,7 +70,7 @@ public class ChipDisplay extends Application {
         stage.show();
     }
 
-    private MenuBar createMenuBar(Stage stage, Chip8 chip){
+    private MenuBar createMenuBar(Stage stage, Chip8 chip, Text memory_text){
         MenuBar menu_bar = new MenuBar();
         Menu file_menu = new Menu("File");
         MenuItem add_file = new MenuItem("Add File");
@@ -102,11 +103,16 @@ public class ChipDisplay extends Application {
                     } else {
                         memory = memory + String.format("%02X", (int) chip.getMemory()[i]) + " ";
                     }
-
                 }
-                TextArea textArea = new TextArea(memory);
-                textArea.setWrapText(true);
-                Scene memory_scene = new Scene(textArea,600, 400);
+
+                memory_text.setText(memory);
+                memory_text.setX(0);
+                memory_text.setY(10);
+                memory_text.setTextAlignment(TextAlignment.JUSTIFY);
+                memory_text.setWrappingWidth(580);
+                ScrollPane root = new ScrollPane();
+                root.setContent(memory_text);
+                Scene memory_scene = new Scene(root,600, 400);
 
                 Stage memory_window = new Stage();
                 memory_window.setTitle("Memory");
